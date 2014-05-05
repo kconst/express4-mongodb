@@ -49,9 +49,6 @@ passport.use(new YahooStrategy({
     }
 ));
 
-
-
-
 var app = express();
 
 app.set('views', __dirname + '/views');
@@ -70,6 +67,7 @@ app.use(passport.session());
 var router = express.Router();
 app.use(express.static(__dirname + '/public'));
 app.use('/', router);
+
 router.get('/', function(req, res){
     res.render('index', { user: req.user });
 });
@@ -100,10 +98,17 @@ router.get('/auth/yahoo',
 //   login page.  Otherwise, the primary route function function will be called,
 //   which, in this example, will redirect the user to the home page.
 router.get('/auth/yahoo/callback',
-    passport.authenticate('yahoo', { failureRedirect: '/login' }),
-    function(req, res) {
-        res.redirect('/');
+    passport.authenticate('yahoo', function(err, user, info) {
+    if (err) {
+        console.log(err.data);
+        return next(err);
+    }
+    if (!user) { return res.redirect('/login'); }
+    req.logIn(user, function(err) {
+        if (err) { return next(err); }
+        return res.redirect('/users/' + user.username);
     });
+}));
 
 router.get('/logout', function(req, res){
     req.logout();
