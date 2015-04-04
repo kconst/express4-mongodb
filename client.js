@@ -112,6 +112,8 @@
             .on("mouseover", function(d) {
                 tooltip.transition()
                     .duration(200)
+                    .style("position", 'absolute')
+                    .style("background", 'white')
                     .style("opacity", .9);
                 tooltip.html(d.Exercise + "<br/> (" + d.Date + ' ' + d.TimeReadable
                     + ", " + yValue(d) + " lbs )")
